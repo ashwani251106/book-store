@@ -15,7 +15,7 @@ const User = require("../models/userSchema");
         }
         const tokenPayload = jwt.verify(token,process.env.JWT_SECRET)
         const userId = tokenPayload.userId;
-        const findUser = await User.findById(userId).select("-password")
+        const findUser = await User.findById(userId)
         if(!findUser){
             return res.status(404).json({
                 message:"user not found!"

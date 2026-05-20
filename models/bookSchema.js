@@ -5,6 +5,11 @@ const bookSchema = new mongoose.Schema({
         required:true,
 
     },
+    origin:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true,
+    },
     author:{
         type:String,
         required:true
@@ -18,6 +23,10 @@ const bookSchema = new mongoose.Schema({
     },
     stock:{
         type:Number
+    },
+    price:{
+        type:Number,
+        required:[true , "price is required!"]
     }
 },{
     timestamps:true
