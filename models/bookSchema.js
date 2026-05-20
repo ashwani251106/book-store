@@ -26,7 +26,8 @@ const bookSchema = new mongoose.Schema({
     },
     price:{
         type:Number,
-        required:[true , "price is required!"]
+        required:[true , "price is required!"],
+        default:100
     }
 },{
     timestamps:true
