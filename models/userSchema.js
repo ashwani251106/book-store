@@ -38,7 +38,10 @@ const userSchema = new mongoose.Schema({
     verified:{
         type:Boolean,
         default:false
-    }
+    },
+    loginAttempts: { type: Number, required: true, default: 0 },
+    isLocked: { type: Boolean, required: true, default: false },
+    lockUntil: { type: Date }
 
     
 },{

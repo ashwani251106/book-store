@@ -73,10 +73,50 @@ const login = async (req, res) => {
             })
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password" });
+        if (user.isLocked && user.lockUntil && user.lockUntil > Date.now()) {
+            const minutesLeft = Math.ceil((user.lockUntil - Date.now()) / 60000);
+            return res.status(423).json({ 
+                message: `Account is temporarily locked. Try again in ${minutesLeft} minutes.`
+            });
         }
+
+       
+        if (user.isLocked && user.lockUntil && user.lockUntil <= Date.now()) {
+            user.isLocked = false;
+            user.loginAttempts = 0;
+            user.lockUntil = undefined;
+            await user.save();
+        }
+
+       
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordCorrect) {
+           
+            user.loginAttempts += 1;
+
+            
+            if (user.loginAttempts >= 5) {
+                user.isLocked = true;
+                user.lockUntil = new Date(Date.now() + 15 * 60 * 1000); // Current time + 15 mins
+            }
+
+            await user.save();
+
+            const attemptsRemaining = 5 - user.loginAttempts;
+            return res.status(401).json({
+                message: user.loginAttempts >= 5 
+                    ? "Too many incorrect attempts. Your account has been locked for 15 minutes."
+                    : `Invalid credentials. You have ${attemptsRemaining} attempts left before account lock.`
+            });
+        }
+
+        
+        user.loginAttempts = 0;
+        user.isLocked = false;
+        user.lockUntil = undefined;
+        await user.save();
+       
 
         const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         const hashRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
