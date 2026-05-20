@@ -13,6 +13,11 @@ const otpSchema = new mongoose.Schema({
     otpHash:{
         type:String,
         required:[true,"Otp is required!"]
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now(),
+        expires:600
     }
 }, 
 
