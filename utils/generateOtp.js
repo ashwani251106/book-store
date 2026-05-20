@@ -14,7 +14,7 @@ function getOtphtml(otp) {
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
             <tr>
                 <td style="padding: 32px 40px 20px 40px; text-align: center; border-bottom: 1px solid #f0f0f0;">
-                    <h2 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Your App Name</h2>
+                    <h2 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">online book store</h2>
                 </td>
             </tr>
             
