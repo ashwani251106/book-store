@@ -3,7 +3,11 @@ const User = require("../models/userSchema");
  
  const isAuth = async(req,res,next)=>{
     try {
-        const token = req?.headers.slice(" ")[1];
+       
+    const authHeader = req.headers.authorization;
+
+
+    const token = authHeader && authHeader.split(" ")[1];
         if(!token){
            return  res.status(403).json({
                 message:"no token found!"
@@ -11,7 +15,7 @@ const User = require("../models/userSchema");
         }
         const tokenPayload = jwt.verify(token,process.env.JWT_SECRET)
         const userId = tokenPayload.userId;
-        const findUser = await User.findById(userId)
+        const findUser = await User.findById(userId).select("-password")
         if(!findUser){
             return res.status(404).json({
                 message:"user not found!"
@@ -19,10 +23,10 @@ const User = require("../models/userSchema");
         }
         if(!findUser.verified){
            return  res.status(403).json({
-            message:"user not authorized request forbidden!"
+            message:"user not verified"
         })
         }
-
+        req.user = findUser
         next();
 
         
