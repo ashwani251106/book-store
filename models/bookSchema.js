@@ -28,6 +28,10 @@ const bookSchema = new mongoose.Schema({
         type:Number,
         required:[true , "price is required!"],
         default:100
+    },
+    buyers:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
     }
 },{
     timestamps:true

@@ -87,7 +87,7 @@ const login = async (req, res) => {
             ip: req.ip
         });
 
-        const accessToken = jwt.sign({ userId: user._id, sessionId: session._id }, process.env.JWT_SECRET, { expiresIn: "10m" });
+        const accessToken = jwt.sign({ userId: user._id, sessionId: session._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
         res.cookie("token", refreshToken, {
             maxAge: 1000 * 3600 * 24 * 7,
@@ -107,7 +107,7 @@ const login = async (req, res) => {
         console.log(error.message);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
+}; 
 
 
 const refershIt = async (req, res) => {

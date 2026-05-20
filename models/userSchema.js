@@ -15,8 +15,15 @@ const userSchema = new mongoose.Schema({
         required:true
     },
     books_given:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Book'
+        bookId:{
+            type: mongoose.Schema.Types.ObjectId,
+                ref: "Book",
+                required: true
+        },
+        quantity:{
+            type:Number,
+            default:1
+        }
     }],
     books_taken:[{
          type: mongoose.Schema.Types.ObjectId,
