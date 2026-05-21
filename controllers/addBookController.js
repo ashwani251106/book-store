@@ -69,6 +69,7 @@ const addBookController = async (req, res) => {
         return res.status(201).json({
             message: "Book added successfully in the store, Thank you!",
             book: {
+                bookId:bookCreated._id,
                 bookName: bookCreated.name,
                 author: bookCreated.author,
                 publication: bookCreated.publication,

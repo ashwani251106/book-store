@@ -32,7 +32,12 @@ const bookSchema = new mongoose.Schema({
     buyers:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
-    }
+    },
+    review:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Reviews"
+    }]
+    
 },{
     timestamps:true
 })
