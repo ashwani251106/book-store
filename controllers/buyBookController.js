@@ -1,6 +1,5 @@
 const Book = require("../models/bookSchema");
 
-
 const buyBook = async(req,res)=>{
     try {
        const {bookId,bookStock} = req.body;

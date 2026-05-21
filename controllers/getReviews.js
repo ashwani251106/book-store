@@ -3,7 +3,7 @@ const Reviews = require("../models/reviewSchema");
 const User = require("../models/userSchema");
 
 const getReviews = async(req,res)=>{
-    const {bookId} = req.body
+    const {bookId} = req.params
     try {
         const book = await Book.findById(bookId)
         if(!book){

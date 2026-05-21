@@ -6,5 +6,5 @@ const getReviews = require("../controllers/getReviews");
 
 const reviewRouter = express.Router()
 reviewRouter.post("/generateReviews",isAuth,generateReviews)
-reviewRouter.get("/getReviews",isAuth,getReviews)
+reviewRouter.get("/getReviews/:bookId",isAuth,getReviews)
 module.exports = reviewRouter
