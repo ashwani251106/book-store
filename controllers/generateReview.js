@@ -38,7 +38,9 @@ const generateReviews = async (req, res) => {
         await user.save()
 
         res.status(200).json({
+
             message: "thanks for the review!",
+            reviewId:newReview._id,
             review:newReview.content
         })
     } catch (error) {
@@ -50,4 +52,41 @@ const generateReviews = async (req, res) => {
     }
 
 }
-module.exports = generateReviews
+const deleteReviews = async(req,res)=>{
+    try {
+         const {reviewId} = req.params
+         
+         if(!reviewId){
+           return res.status(400).json({
+                message:"no review selected"
+            })
+         }
+         const reviewAuthor = req.user
+         if(!reviewAuthor){
+            return res.status(404).json({
+                message:"user not found"
+            })
+         }
+        const deleteit = await Reviews.findOneAndDelete({_id:reviewId,user:reviewAuthor._id})
+        if(!deleteit){
+           return res.status(401).json({
+                message:"you are not authorized to delete this review!"
+            })
+        }
+       await User.findByIdAndUpdate(reviewAuthor._id,{
+        $pull:{comments:reviewId}
+       })
+
+        res.status(200).json({
+            message:"review deleted successfully!"
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            message:"internal server error!"
+        })
+        
+    }
+       
+}
+module.exports = {generateReviews , deleteReviews}

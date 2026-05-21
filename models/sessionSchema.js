@@ -15,7 +15,8 @@ const sessionSchema = new mongoose.Schema({
     },
     ip:{
         type:String
-    }
+    },
+    expiresAt: { type: Date, required: true, expires: 0 }
 },{
     timestamps:true
 })
