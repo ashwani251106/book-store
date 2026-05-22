@@ -22,6 +22,7 @@ const chatRouter = require("./routes/chatRoute")
 
 const messageModel = require("./models/messageModel")
 const viewBookRoute = require("./routes/viewBookRoute")
+const writeBookrouter = require("./routes/WriteBookRoute")
 
 mongoose.connect(process.env.MONGO_STRING).then(()=>console.log("mongo Connected!")).catch((error)=>console.log(error))
 app.use(express.json())
@@ -33,6 +34,7 @@ app.use("/api",buyBookRouter)
 app.use("/api",reviewRouter)
 app.use("/api",chatRouter)
 app.use("/api",viewBookRoute)
+app.use("/api",writeBookrouter)
 app.get("/",(req,res)=>{
     res.send("welcome sir how are you ? ")
 })

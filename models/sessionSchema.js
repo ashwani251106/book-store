@@ -3,7 +3,9 @@ const sessionSchema = new mongoose.Schema({
     userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref:"User",
-        required:[true,"user id is required!"]
+        required:[true,"user id is required!"],
+      
+
     },
     refreshToken:{
         type:String,

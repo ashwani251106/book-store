@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
         bookId:{
             type: mongoose.Schema.Types.ObjectId,
                 ref: "Book",
-                required: true
+                required: true,
+                index:true
         },
         quantity:{
             type:Number,

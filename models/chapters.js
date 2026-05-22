@@ -1,20 +1,22 @@
 const { default: mongoose } = require("mongoose");
 
 const chapterSchema = new mongoose.Schema({
-   bookId:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"onProgressBookModel",
-    required:true
+   bookId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "onProgressBookModel",
+      required: true,
+      index: true
+
 
    },
-   subtitle:{
-        type:String,
-        required:true
+   subtitle: {
+      type: String,
+      required: true
    },
-   content:{
-    type:String,
-    
+   content: {
+      type: String,
+
    }
 })
-const chapterModel = mongoose.model("chapterModel",chapterSchema)
+const chapterModel = mongoose.model("chapterModel", chapterSchema)
 module.exports = chapterModel

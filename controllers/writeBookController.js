@@ -1,0 +1,134 @@
+const Book = require("../models/bookSchema");
+const chapterModel = require("../models/chapters");
+const onProgressBookModel = require("../models/onProgressBookModel");
+
+const writeBook = async (req, res) => {
+    try {
+        const { title } = req.body
+        if (!title) {
+            return res.status(400).json({
+                message: "title is required!"
+            })
+        }
+        const userId = req.user._id
+        if (!userId) {
+            return res.status(404).json({
+                message: "user is unauthorized"
+            })
+        }
+        const addBook = await onProgressBookModel.create({
+            title,
+            authorId: userId,
+            chapters: []
+        })
+        return res.status(200).json({
+            message: "now write the book",
+            bookId: addBook._id
+        })
+    } catch (error) {
+        console.log(error.message);
+
+        return res.status(500).json({
+            message: "internal server error!"
+        })
+    }
+}
+const generateChapters = async (req, res) => {
+    try {
+        const { bookId } = req.params
+        if (!bookId) {
+            return res.status(400).json({
+                message: "no book id provided"
+            })
+        }
+        const { subtitle } = req.body
+        if (!subtitle) {
+            return res.status(400).json({
+                message: "subtitles are required"
+            })
+        }
+        const newChapter = await chapterModel.create({
+            bookId,
+            subtitle,
+
+        })
+        const book = await onProgressBookModel.findByIdAndUpdate({ _id: bookId }, { $push: { chapters: newChapter._id } }, { new: true })
+
+
+        return res.status(201).json({
+            newChapter
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: "internal server error!" })
+
+    }
+}
+const saveChapterContent = async (req, res) => {
+    try {
+        const { chapterId } = req.params
+        if (!chapterId) {
+            return res.status(400).json({
+                message: "no chapter id provided"
+            })
+        }
+        const { subtitle, content } = req.body
+
+        const updatedChapter = await chapterModel.findByIdAndUpdate(chapterId, { subtitle, content })
+
+        return res.status(200).json({
+
+            message: "chapter updated successfully!",
+            chapterId
+        })
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: "internal server error!" })
+    }
+}
+const publishBook = async (req, res) => {
+    try {
+        const { bookId } = req.params
+        const {publication,edition,stock,price} = req.body  // take it from the user
+        const userId = req.user._id
+       
+        if (!userId) {
+            return res.status(404).json({
+                message: "user is unauthorized"
+            })
+        }
+        
+
+        if (!bookId) {
+            return res.status(400).json({
+                message: "no book id provided"
+            })
+        }
+        const bookDetails = await onProgressBookModel.findById(bookId).populate("chapters","subtitle content").populate("authorId","name")
+        const bookAddedToMarket  = await Book.create({
+            name: bookDetails.title,
+            origin: userId,
+            authorId:userId,
+            authorName:bookDetails.authorId.name,
+            publication,
+            edition,
+            stock,
+            price,
+            source:"original",
+            publishedContent:bookDetails.chapters
+        })
+        await chapterModel.deleteMany({ bookId });
+        await onProgressBookModel.findByIdAndDelete(bookId)
+        res.status(201).json({
+            message:"book sent to market",
+            bookAddedToMarket
+        })
+
+
+    } catch (error) {
+         console.log(error.message);
+        return res.status(500).json({ message: "internal server error!" })
+    }
+}
+module.exports = { writeBook, generateChapters,saveChapterContent,publishBook }

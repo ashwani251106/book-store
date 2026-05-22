@@ -59,7 +59,8 @@ const addBookController = async (req, res) => {
             publication: bookPublication,
             edition: bookEdition,
             stock: bookStock,
-            price: bookPrice
+            price: bookPrice,
+            source:"used"
         });
 
 
@@ -85,5 +86,25 @@ const addBookController = async (req, res) => {
         });
     }
 };
+const getBookByUser = async(req,res)=>{
+    try {
+        const userId = req.user._id
+        if(!userId){
+            return res.status(404).json({
+                message:"user not found!"
+            })
+        }
+        const allBooks = await Book.find({origin:userId}).populate("review","content")
+      return  res.status(200).json({
+            message:` ${allBooks.length}books found!`,
+            allBooks
+        })
+    } catch (error) {
+         console.error(error.message);
+        return res.status(500).json({
+            message: "Internal server error!"
+        });
+    }
+}
 
-module.exports = addBookController;
+module.exports = {addBookController,getBookByUser};

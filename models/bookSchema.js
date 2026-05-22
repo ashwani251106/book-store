@@ -1,8 +1,22 @@
 const mongoose = require("mongoose")
+const publishedChapterSchema = new mongoose.Schema({
+    subtitle: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    content: {
+        type: String, 
+        required: true
+    }
+}, { _id: false }
+)
 const bookSchema = new mongoose.Schema({
     name:{
         type:String,
         required:true,
+           index:true
+
 
     },
     origin:{
@@ -10,9 +24,17 @@ const bookSchema = new mongoose.Schema({
         ref:"User",
         required:true,
     },
-    author:{
+    authorName:{
         type:String,
-        required:true
+           index:true
+
+       
+    },
+    authorId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        index:true
+
     },
     publication:{
         type:String,
@@ -36,7 +58,15 @@ const bookSchema = new mongoose.Schema({
     review:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Reviews"
-    }]
+    }],
+    source:{
+        type:String,
+        required:true,
+        enum:["original","used"] ,
+           index:true
+   
+    },
+    publishedContent:[publishedChapterSchema]
     
 },{
     timestamps:true

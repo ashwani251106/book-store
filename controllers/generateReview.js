@@ -4,8 +4,9 @@ const User = require("../models/userSchema");
 
 const generateReviews = async (req, res) => {
     try {
-        const {content,bookId} = req.body
-        if (!content) {
+        const {bookId} = req.params
+        const {content} = req.body
+        if (!content || !bookId) {
             return res.status(400).json({
                 message: "all fields required!"
             })
@@ -16,8 +17,8 @@ const generateReviews = async (req, res) => {
                 message: "user not authorized!"
             })
         }
-        const user = await User.findById(userId)
-        if (!user) {
+       
+        if (!userId) {
             return res.status(404).json({
                 message: "user not found!"
             })
@@ -29,7 +30,7 @@ const generateReviews = async (req, res) => {
             })
         }
         const newReview = await Reviews.create({
-            user,
+            user:userId,
             content
         })
         book.review.push(newReview._id)

@@ -8,12 +8,16 @@ const onProgressBookSchema = new mongoose.Schema({
     authorId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
-        required:true
+        required:true,
+           index:true
+
     },
     chapters:[{
           type:mongoose.Schema.Types.ObjectId,
         ref:"chapterModel",
-        required:true
+        required:true,
+           index:true
+
     }]
 })
 const onProgressBookModel = mongoose.model("onProgressBookModel",onProgressBookSchema)
