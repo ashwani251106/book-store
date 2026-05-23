@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const { sendEmail } = require("../services/email.services");
 const { generateOtp, getOtphtml } = require("../utils/generateOtp");
 const OtpModel = require("../models/otpSchema");
+const redis = require("../config/redisConfig")
 
 const register = async (req, res) => {
     const { userName, email, password } = req.body;
@@ -29,12 +30,9 @@ const register = async (req, res) => {
         });
         const otp = generateOtp();
         const html = getOtphtml(otp)
-        const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
-        await OtpModel.create({
-            email,
-            user: user._id,
-            otpHash
-        })
+        const otp_key = `Authentication/otp/:${user._id}`
+        await redis.setex(otp_key,600,otp)
+        const ttl = await redis.ttl(otp_key)
         await sendEmail(email, "OTP VERIFICATION", `your otp code is ${otp}`, html)
 
 
@@ -47,7 +45,8 @@ const register = async (req, res) => {
             id: user._id,
             userName,
             email,
-            verified: user.verified
+            verified: user.verified,
+            otp_time:ttl
         });
 
     } catch (error) {
@@ -255,20 +254,23 @@ const logoutAll = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const { otp, email } = req.body
-    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
-    const otpDoc = await OtpModel.findOne({
-        email,
-        otpHash
-    })
-    if (!otpDoc) {
-        return res.status(400).json({
-            message: "invalid otp!"
+    const {userId} = req.params
+     const otp_key = `Authentication/otp/:${userId}`
+     const redis_otp =await redis.get(otp_key)
+     if(!redis_otp){
+       return res.status(400).json({
+            message:"otp not exist or expired"
         })
-    }
-    const user = await User.findByIdAndUpdate(otpDoc.user, { verified: true }, { new: true })
-    await OtpModel.deleteMany({
-        user: otpDoc.user
-    })
+     }
+
+     if(String(otp)!==String(redis_otp)){
+       return res.status(400).json({
+            message:"otp mismatch"
+        })
+     }
+     const user = await User.findByIdAndUpdate(userId,{verified:true},{new:true})
+
+    await redis.del(otp_key)
 
     return res.status(200).json({
         message: "otp verifed sucessfully!",

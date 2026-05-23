@@ -1,3 +1,4 @@
+const redis = require("../config/redisConfig");
 const Book = require("../models/bookSchema");
 const Reviews = require("../models/reviewSchema");
 const User = require("../models/userSchema");
@@ -6,12 +7,15 @@ const generateReviews = async (req, res) => {
     try {
         const {bookId} = req.params
         const {content} = req.body
+         const userId = req.user._id
+        const book_review_key = `reviews:book:${bookId}`
+        const book_review_user = `reviews:user:${userId}`
         if (!content || !bookId) {
             return res.status(400).json({
                 message: "all fields required!"
             })
         }
-        const userId = req.user._id
+       
         if (!userId) {
             return res.status(401).json({
                 message: "user not authorized!"
@@ -34,7 +38,8 @@ const generateReviews = async (req, res) => {
         await book.save()
         user.comments.push(newReview._id)
         await user.save()
-
+        await redis.del(book_review_key)
+        await redis.del(book_review_user)
         res.status(200).json({
 
             message: "thanks for the review!",
@@ -52,8 +57,9 @@ const generateReviews = async (req, res) => {
 }
 const deleteReviews = async(req,res)=>{
     try {
-         const {reviewId} = req.params
-         
+         const {reviewId,bookId} = req.params
+         const book_review_key = `reviews:book:${bookId}`
+        
          if(!reviewId){
            return res.status(400).json({
                 message:"no review selected"
@@ -74,7 +80,9 @@ const deleteReviews = async(req,res)=>{
        await User.findByIdAndUpdate(reviewAuthor._id,{
         $pull:{comments:reviewId}
        })
-
+        const book_review_user = `reviews:user:${reviewAuthor._id}`
+        await redis.del(book_review_key)
+        await redis.del(book_review_user)
         res.status(200).json({
             message:"review deleted successfully!"
         })

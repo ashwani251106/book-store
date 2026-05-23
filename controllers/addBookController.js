@@ -1,3 +1,4 @@
+const redis = require("../config/redisConfig");
 const Book = require("../models/bookSchema");
 const User = require("../models/userSchema");
 
@@ -24,7 +25,8 @@ const addBookController = async (req, res) => {
             author: bookAuthor,
             publication: bookPublication
         });
-
+        const userShelfKey = `getBookByUser:${userId}`;
+        const usedMarketKey = `usedsourcekey:used`;
         if (bookExistAlready) {
             const stocktoAdd = parseInt(bookStock) || 1;
 
@@ -66,7 +68,7 @@ const addBookController = async (req, res) => {
 
         user.books_given.push({ bookId: bookCreated._id, quantity: bookStock });
         await user.save();
-
+        await redis.del([userShelfKey, usedMarketKey]);
         return res.status(201).json({
             message: "Book added successfully in the store, Thank you!",
             book: {
@@ -95,7 +97,10 @@ const getBookByUser = async(req,res)=>{
                 message:"user not found!"
             })
         }
-        const allBooks = await Book.find({origin:userId}).populate("review","content").select("name authotName price")
+        const book_key = `getBookByUser:${userId}`
+
+        const allBooks = await Book.find({origin:userId}).populate("review","content").select("name authorName price")
+        await redis.setex(book_key,36000,JSON.stringify(allBooks))
       return  res.status(200).json({
             message:` ${allBooks.length}books found!`,
             allBooks
@@ -111,7 +116,10 @@ const getBookByUser = async(req,res)=>{
 const getAllOriginalBook = async(req,res)=>{
     try {
         const allOriginalBooks = await Book.find({source:"original"}).select("name authorName")
-        res.status(200).json({
+        const original_source_key = `originalsourcekey:original`
+        const  jitter = Math.floor(Math.random() * 600);
+        await redis.setex(original_source_key,36000+jitter,JSON.stringify(allOriginalBooks))
+       return res.status(200).json({
             allOriginalBooks
         })
     } catch (error) {
@@ -125,7 +133,10 @@ const getAllOriginalBook = async(req,res)=>{
 const getAllUsedBook = async(req,res)=>{
     try {
         const allUsedBooks = await Book.find({source:"used"}).select("name authorName")
-        res.status(200).json({
+        const used_source_key = `usedsourcekey:used`
+        const  jitter = Math.floor(Math.random() * 600);
+        await redis.setex(used_source_key,36000+jitter,JSON.stringify(allUsedBooks))
+      return  res.status(200).json({
             allUsedBooks
         })
     } catch (error) {

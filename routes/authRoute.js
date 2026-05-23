@@ -7,5 +7,5 @@ authRouter.get("/refresh",refershIt)
 authRouter.post("/login",login);
 authRouter.get("/logout",logout);
 authRouter.get("/logoutAll",logoutAll);
-authRouter.post("/verify-email",verifyEmail)
+authRouter.post("/verify-email/:userId",verifyEmail)
 module.exports = authRouter;

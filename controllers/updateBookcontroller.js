@@ -1,3 +1,4 @@
+const redis = require("../config/redisConfig");
 const Book = require("../models/bookSchema");
 
 const updateBookDetails = async (req, res) => {
@@ -5,7 +6,7 @@ const updateBookDetails = async (req, res) => {
         const { bookId, newName, newauthorName, newPublication, newEdition, newStock, newPrice } = req.body;
         
        
-        if (!req.user || !req.user.id) {
+        if (!req.user || !req.user._id) {
             return res.status(401).json({ message: "Unauthorized! Please log in." });
         }
         
@@ -31,7 +32,8 @@ const updateBookDetails = async (req, res) => {
 
        
         const updatedBook = await Book.findByIdAndUpdate(bookId, updateFields, { new: true });
-
+        const view_book_key = `viewbookkey${bookId}`
+        await redis.del(view_book_key)
         
       
         return res.status(200).json({

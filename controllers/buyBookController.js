@@ -1,8 +1,10 @@
+const redis = require("../config/redisConfig");
 const Book = require("../models/bookSchema");
 
 const buyBook = async(req,res)=>{
     try {
        const {bookId,bookStock} = req.body;
+        const view_book_key = `viewbookkey:${bookId}`;
        const quantityNeeded = parseInt(bookStock) || 1;
     if(!bookId){
         return res.status(400).json({
@@ -33,6 +35,8 @@ const buyBook = async(req,res)=>{
    await  book.save()
    buyingUser.books_taken.push(bookId)
    await buyingUser.save()
+   
+    await redis.del(view_book_key)
     return res.status(200).json({
         message:"book bought sucessfully",
         book:book.name

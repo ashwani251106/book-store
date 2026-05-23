@@ -9,7 +9,10 @@ const viewBook = async (req, res) => {
             })
         }
         const book = await Book.findById(bookId)
-        res.status(200).json({
+        const view_book_key = `viewbookkey${bookId}`
+        const jitter = Math.floor(Math.random() * 600);
+        await redis.setex(view_book_key,36000+jitter,JSON.stringify(book))
+      return  res.status(200).json({
             bookId,
             bookName:book.name,
             bookAuthor:book.author,

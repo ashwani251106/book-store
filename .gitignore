@@ -17,3 +17,6 @@ jspm_packages/
 .DS_Store
 .vscode/
 .idea/
+
+mongo-data/
+redis-data/
