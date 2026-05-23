@@ -86,6 +86,7 @@ const addBookController = async (req, res) => {
         });
     }
 };
+// redis can be used here!
 const getBookByUser = async(req,res)=>{
     try {
         const userId = req.user._id
@@ -94,7 +95,7 @@ const getBookByUser = async(req,res)=>{
                 message:"user not found!"
             })
         }
-        const allBooks = await Book.find({origin:userId}).populate("review","content")
+        const allBooks = await Book.find({origin:userId}).populate("review","content").select("name authotName price")
       return  res.status(200).json({
             message:` ${allBooks.length}books found!`,
             allBooks
@@ -106,5 +107,33 @@ const getBookByUser = async(req,res)=>{
         });
     }
 }
+// redis
+const getAllOriginalBook = async(req,res)=>{
+    try {
+        const allOriginalBooks = await Book.find({source:"original"}).select("name authorName")
+        res.status(200).json({
+            allOriginalBooks
+        })
+    } catch (error) {
+         console.error(error.message);
+        return res.status(500).json({
+            message: "Internal server error!"
+        });
+    }
+}
+// redis
+const getAllUsedBook = async(req,res)=>{
+    try {
+        const allUsedBooks = await Book.find({source:"used"}).select("name authorName")
+        res.status(200).json({
+            allUsedBooks
+        })
+    } catch (error) {
+         console.error(error.message);
+        return res.status(500).json({
+            message: "Internal server error!"
+        });
+    }
+}
 
-module.exports = {addBookController,getBookByUser};
+module.exports = {addBookController,getBookByUser,getAllOriginalBook,getAllUsedBook};

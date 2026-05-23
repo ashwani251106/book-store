@@ -24,7 +24,10 @@ const messageModel = require("./models/messageModel")
 const viewBookRoute = require("./routes/viewBookRoute")
 const writeBookrouter = require("./routes/WriteBookRoute")
 
-mongoose.connect(process.env.MONGO_STRING).then(()=>console.log("mongo Connected!")).catch((error)=>console.log(error))
+mongoose.connect(process.env.MONGO_STRING,{
+    maxPoolSize: 10, 
+    minPoolSize: 2,
+}).then(()=>console.log("mongo Connected!")).catch((error)=>console.log(error))
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api",authRouter)

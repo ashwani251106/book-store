@@ -1,5 +1,5 @@
 const Book = require("../models/bookSchema");
-
+// redis me daal sakte hai ...
 const viewBook = async (req, res) => {
     try {
         const { bookId } = req.params

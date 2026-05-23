@@ -1,6 +1,7 @@
 const Book = require("../models/bookSchema");
 const chapterModel = require("../models/chapters");
 const onProgressBookModel = require("../models/onProgressBookModel");
+const User = require("../models/userSchema");
 
 const writeBook = async (req, res) => {
     try {
@@ -118,6 +119,12 @@ const publishBook = async (req, res) => {
             source:"original",
             publishedContent:bookDetails.chapters
         })
+        await User.findByIdAndUpdate(userId,{$push:{
+            books_given:{
+               bookId: bookAddedToMarket._id,
+               quantity:stock
+            }
+        }},{new:true})
         await chapterModel.deleteMany({ bookId });
         await onProgressBookModel.findByIdAndDelete(bookId)
         res.status(201).json({
@@ -131,4 +138,25 @@ const publishBook = async (req, res) => {
         return res.status(500).json({ message: "internal server error!" })
     }
 }
-module.exports = { writeBook, generateChapters,saveChapterContent,publishBook }
+// redis can be used here!
+const getChaptersOfABook = async(req,res)=>{
+    try {
+        const {bookId} = req.params
+         if (!bookId) {
+            return res.status(400).json({
+                message: "no book id provided"
+            })
+        }
+        const allChapters = await chapterModel.find({bookId}).select("subtitle")
+        const chapterNames = allChapters.map((chapter)=>chapter.subtitle)
+        res.status(200).json({
+            message:` ${allChapters.length} chapters found!`,
+            chapterNames
+
+        })
+    } catch (error) {
+          console.log(error.message);
+        return res.status(500).json({ message: "internal server error!" })
+    }
+}
+module.exports = { writeBook, generateChapters,saveChapterContent,publishBook,getChaptersOfABook }

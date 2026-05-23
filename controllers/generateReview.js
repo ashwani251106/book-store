@@ -18,20 +18,17 @@ const generateReviews = async (req, res) => {
             })
         }
        
-        if (!userId) {
-            return res.status(404).json({
-                message: "user not found!"
-            })
-        }
+      
         const book = await Book.findById(bookId)
         if(!book){
              return res.status(402).json({
-                message: "select a book to enter a review!"
+                message: "no book found!"
             })
         }
         const newReview = await Reviews.create({
             user:userId,
-            content
+            content,
+          
         })
         book.review.push(newReview._id)
         await book.save()

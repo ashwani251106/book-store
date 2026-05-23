@@ -1,7 +1,7 @@
 const Book = require("../models/bookSchema");
 const Reviews = require("../models/reviewSchema");
 const User = require("../models/userSchema");
-
+// redis me dalne layak hai yeh!
 const getReviews = async(req,res)=>{
     const {bookId} = req.params
     try {
@@ -33,7 +33,7 @@ const getReviews = async(req,res)=>{
         
     }
 }
-
+// redis me dalne layak hai yeh!
 const getReviewsByUser = async(req,res)=>{
     try {
         const userId = req.user._id

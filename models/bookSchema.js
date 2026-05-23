@@ -26,7 +26,7 @@ const bookSchema = new mongoose.Schema({
     },
     authorName:{
         type:String,
-           index:true
+        index:true
 
        
     },
