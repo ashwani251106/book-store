@@ -57,4 +57,5 @@ const getReviewsByUser = async(req,res)=>{
         });
     }
 }
+
 module.exports = {getReviews,getReviewsByUser}

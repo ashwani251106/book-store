@@ -17,8 +17,8 @@ const profile = async (req, res) => {
         })
     } catch (error) {
         console.log(error.message);
-        res.status(400).json({
-            error
+        res.status(500).json({
+            message:"internal server error"
         })
     }
 
