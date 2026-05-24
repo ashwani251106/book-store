@@ -25,7 +25,7 @@ const addBookController = async (req, res) => {
             author: bookAuthor,
             publication: bookPublication
         });
-        const userShelfKey = `getBookByUser:${userId}`;
+        const userShelfKey = `getBookByUser:${user._id}`;
         const usedMarketKey = `usedsourcekey:used`;
         if (bookExistAlready) {
             const stocktoAdd = parseInt(bookStock) || 1;

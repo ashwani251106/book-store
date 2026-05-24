@@ -6,5 +6,5 @@ const { cacheViewBook } = require("../middlewares/cacheBookMiddleware")
 
 const viewBookRoute = express.Router()
 viewBookRoute.get("/viewBook/:bookId",isAuth,cacheViewBook,viewBook)
-viewBookRoute.post("/updateDetails",isAuth,updateBookDetails)
+viewBookRoute.patch("/updateDetails/:bookId",isAuth,updateBookDetails)
 module.exports = viewBookRoute

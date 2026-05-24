@@ -10,6 +10,8 @@ const cacheUserProfile = async(req,res,next)=>{
         return next();        
     }
     const user_data_json = JSON.parse(user_data_string)
+    console.log("from redis");
+    
     return res.status(200).json({
         ...user_data_json
     })

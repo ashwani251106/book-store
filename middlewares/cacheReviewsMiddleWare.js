@@ -1,10 +1,10 @@
 const redis = require("../config/redisConfig");
 
-// 1. Cache: Public review section for a single book profile
+
 const cacheReviewOfABook = async (req, res, next) => {
     try {
         const { bookId } = req.params;
-        const book_review_key = `reviews:book:${bookId}`;
+        const book_review_key = `review:book:${bookId}`;
 
         const reviews_string = await redis.get(book_review_key);
         if (!reviews_string) {
@@ -20,7 +20,7 @@ const cacheReviewOfABook = async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error in cacheReviewOfABook:", error.message);
-        return next(); // Fall back seamlessly to DB if Redis acts up
+        return next(); 
     }
 };
 
@@ -28,7 +28,7 @@ const cacheReviewOfABook = async (req, res, next) => {
 const cacheReviewOfAUser = async (req, res, next) => { 
     try {
         const userId = req.user._id;
-        const user_review_key = `reviews:user:${userId}`; 
+        const user_review_key = `review:user:${userId}`; 
 
         const reviews_string = await redis.get(user_review_key);
         if (!reviews_string) {

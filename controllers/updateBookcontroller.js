@@ -3,7 +3,8 @@ const Book = require("../models/bookSchema");
 
 const updateBookDetails = async (req, res) => {
     try {
-        const { bookId, newName, newauthorName, newPublication, newEdition, newStock, newPrice } = req.body;
+        const {bookId} = req.params
+        const { newName, newauthorName, newPublication, newEdition, newStock, newPrice } = req.body;
         
        
         if (!req.user || !req.user._id) {
@@ -35,10 +36,14 @@ const updateBookDetails = async (req, res) => {
         const view_book_key = `viewbookkey${bookId}`
         await redis.del(view_book_key)
         
-      
+      const {name,authorName,publication,stock,price} = updatedBook
         return res.status(200).json({
             message: "Book updated successfully!",
-            updatedBook
+            name,
+            authorName,
+            publication,
+            stock,
+            price
         });
 
     } catch (error) {

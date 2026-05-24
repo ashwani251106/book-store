@@ -23,7 +23,7 @@ const getReviews = async(req,res)=>{
             }
         })
         const time = 36000 + parseInt(Math.random()*600)
-       await redis.setex(book_review_key,time,JSON.stringify(formatReviews))
+         await redis.setex(book_review_key,time,JSON.stringify(formatReviews))
         return res.status(200).json({
             success:true,
             reviews:formatReviews

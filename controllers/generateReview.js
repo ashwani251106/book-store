@@ -34,6 +34,7 @@ const generateReviews = async (req, res) => {
             content,
           
         })
+        const user = await User.findById(userId)
         book.review.push(newReview._id)
         await book.save()
         user.comments.push(newReview._id)
@@ -58,7 +59,7 @@ const generateReviews = async (req, res) => {
 const deleteReviews = async(req,res)=>{
     try {
          const {reviewId,bookId} = req.params
-         const book_review_key = `reviews:book:${bookId}`
+         const book_review_key = `review:book:${bookId}`
         
          if(!reviewId){
            return res.status(400).json({
@@ -80,7 +81,10 @@ const deleteReviews = async(req,res)=>{
        await User.findByIdAndUpdate(reviewAuthor._id,{
         $pull:{comments:reviewId}
        })
-        const book_review_user = `reviews:user:${reviewAuthor._id}`
+       await Book.findByIdAndUpdate(bookId,{
+            $pull:{review:reviewId}
+       })
+        const book_review_user = `review:user:${reviewAuthor._id}`
         await redis.del(book_review_key)
         await redis.del(book_review_user)
         res.status(200).json({

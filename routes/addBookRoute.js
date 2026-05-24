@@ -7,4 +7,5 @@ const addBookRouter = express.Router()
 addBookRouter.post("/addBook",isAuth,addBookController),
 addBookRouter.get("/getBookByUser",isAuth,cacheBookByUser,getBookByUser)
 addBookRouter.get("/getUsedBooks",isAuth,cacheUsedBooks,getAllUsedBook)
+addBookRouter.get("/getOriginalBooks",isAuth,cacheOriginalBooks,getAllOriginalBook)
 module.exports = addBookRouter

@@ -12,7 +12,10 @@ const cacheChatMiddleWare = async(req,res,next)=>{
             
         }
         const messages_json = JSON.parse(messages_string)
+        console.log("cache hit sending chat from redis!");
+        
          return res.status(200).json({
+            
             message:"chat retreived successfully!",
             messages:messages_json,
 
