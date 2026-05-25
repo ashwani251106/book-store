@@ -8,7 +8,7 @@ const httpServer = http.createServer(app)
 const socket = new Server(httpServer,{
     cors:{
         origin:"http://localhost:5173",
-        methods:["GET","POST"]
+        methods:["GET","POST","PATCH","DELETE"]
     }
 })
 const mongoose = require("mongoose")
@@ -23,6 +23,7 @@ const chatRouter = require("./routes/chatRoute")
 const messageModel = require("./models/messageModel")
 const viewBookRoute = require("./routes/viewBookRoute")
 const writeBookrouter = require("./routes/WriteBookRoute")
+const redis = require("./config/redisConfig")
 
 mongoose.connect(process.env.MONGO_STRING,{
     maxPoolSize: 10, 
