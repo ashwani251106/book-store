@@ -5,7 +5,7 @@ const cacheBookByUser = async (req, res, next) => {
     try {
         const userId = req.user._id;
         const book_key = `getBookByUser:${userId}`;
-        
+
         const book_data_string = await redis.get(book_key);
         if (!book_data_string) {
             console.log("❌ Cache miss: go to DB");
@@ -29,7 +29,7 @@ const cacheChaptersofABook = async (req, res, next) => {
     try {
         const { bookId } = req.params;
         const chapter_key = `getchaptersofabook:${bookId}`; // 🛠️ Fixed: Added namespace colon
-        
+
         const chapterNames_string = await redis.get(chapter_key);
         if (!chapterNames_string) {
             console.log(" Cache miss: redirecting to DB");
@@ -52,7 +52,7 @@ const cacheChaptersofABook = async (req, res, next) => {
 const cacheViewBook = async (req, res, next) => {
     try {
         const { bookId } = req.params;
-        const view_book_key = `viewbookkey:${bookId}`; 
+        const view_book_key = `viewbookkey:${bookId}`;
         const book_string = await redis.get(view_book_key);
         if (!book_string) {
             console.log("❌ Cache miss: sending the request to DB");
@@ -61,6 +61,12 @@ const cacheViewBook = async (req, res, next) => {
 
         console.log("⚡ Cache hit: Serving book view payload");
         const book_obj = JSON.parse(book_string);
+        const liveStock = await redis.get(`stock:book:${bookId}`);
+
+
+        if (liveStock !== null) {
+            book_obj.stock = parseInt(liveStock);
+        }
         return res.status(200).json({
             bookId,
             bookName: book_obj.name,
@@ -80,7 +86,7 @@ const cacheViewBook = async (req, res, next) => {
 const cacheOriginalBooks = async (req, res, next) => {
     try {
         const original_source_key = `originalsourcekey:original`;
-        
+
         const original_books_string = await redis.get(original_source_key);
         if (!original_books_string) {
             console.log(" Cache miss: directing to the DB");
@@ -102,7 +108,7 @@ const cacheOriginalBooks = async (req, res, next) => {
 const cacheUsedBooks = async (req, res, next) => {
     try {
         const used_source_key = `usedsourcekey:used`;
-        
+
         const used_books_string = await redis.get(used_source_key);
         if (!used_books_string) {
             console.log(" Cache miss: directing to the DB");
@@ -111,10 +117,10 @@ const cacheUsedBooks = async (req, res, next) => {
 
         console.log(" Cache hit: Serving marketplace used books");
         const used_books_json = JSON.parse(used_books_string);
-        
-       
+
+
         return res.status(200).json({
-            allUsedBooks: used_books_json 
+            allUsedBooks: used_books_json
         });
     } catch (error) {
         console.error("Error in cacheUsedBooks:", error.message);
@@ -127,7 +133,7 @@ const cacheUnpublishedBooks = async (req, res, next) => {
     try {
         const userId = req.user._id;
         const draft_of_user = `getalldraftofauser:${userId}`;
-        
+
         const get_drafts_string = await redis.get(draft_of_user);
         if (!get_drafts_string) {
             console.log(" Cache miss: sending to the DB");
