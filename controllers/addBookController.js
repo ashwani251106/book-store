@@ -99,11 +99,11 @@ const getBookByUser = async(req,res)=>{
         }
         const book_key = `getBookByUser:${userId}`
 
-        const allBooks = await Book.find({origin:userId}).populate("review","content").select("name authorName price")
+        const Books = await Book.find({origin:userId}).populate("review","content").select("name authorName price publication edition source")
         await redis.setex(book_key,36000,JSON.stringify(allBooks))
       return  res.status(200).json({
             message:` ${allBooks.length}books found!`,
-            allBooks
+            allBooks:Books
         })
     } catch (error) {
          console.error(error.message);

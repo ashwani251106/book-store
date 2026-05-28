@@ -22,26 +22,42 @@ const profile = async (req, res) => {
 const changeProfile = async(req,res)=>{
     try {
         const {newName,newEmail,newPassword} = req.body
-        if(!newName || !newEmail){
-            return res.status(400).json({
-                message:"all fields are required!"
-            })
-        }
-        // if(req.user.email===newEmail){
-        //     return res.status(400).json({
-        //         message:"kindly change your credentials"
-        //     })
-        // }
        
+      
+
+     
         const userId = req.user._id
         const user_key = `userKey:${userId}`
-        const salt = await bcrypt.genSalt(10);
-        const newPassHashed = await bcrypt.hash(newPassword,salt)
-        const updatedUser = await User.findByIdAndUpdate(userId,{name:newName,email:newEmail,password:newPassHashed},{new:true})
-        const {name,email,verified,} = updatedUser
+    
+       
+       
+       const user = await User.findById(userId)
+         if(newName){
+            user.name = newName
+        }
+        if(newEmail){
+              const emailExist = await User.findOne({email:newEmail,_id:{$ne:userId}})
+              if(emailExist){
+                   return  res.status(423).json({
+                        message:"this email already registered by other user!"
+                    })
+              }
+            user.email = newEmail
+        }
+        if(newPassword){
+             const salt = await bcrypt.genSalt(10);
+             const hashedPass = await bcrypt.hash(newPassword,salt)
+
+             user.password = hashedPass
+
+        }
+        await user.save()
+        const {name,email,verified,} = user
         await redis.del(user_key)
         res.status(201).json({
+
             message:"user credentials updated",
+            userId,
             name,
             email,
             verified,

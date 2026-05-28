@@ -219,3 +219,4 @@ const getUnpublishedDrafts = async (req, res) => {
     }
 }
 module.exports = { writeBook, generateChapters, saveChapterContent, publishBook, getChaptersOfABook, getUnpublishedDrafts }
+ 

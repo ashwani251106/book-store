@@ -67,8 +67,8 @@ const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
         if (!user.verified) {
-            return res.status(401).json({
-                message: "verify the email first!"
+            return res.status(402).json({
+                message: "verify the email first during registration"
             })
         }
 
@@ -179,9 +179,7 @@ const refershIt = async (req, res) => {
             return res.status(403).json({ message: "Refresh token expired or tampered with" });
         }
 
-
-        const accessToken = jwt.sign({ userId: payload.userId, sessionId: sessionExist._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
-        const newrefreshToken = jwt.sign({ userId: payload.userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+         const newrefreshToken = jwt.sign({ userId: payload.userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.cookie("token", newrefreshToken, {
             maxAge: 1000 * 3600 * 24 * 7,
@@ -197,6 +195,9 @@ const refershIt = async (req, res) => {
         sessionExist.refreshToken = newHashRefreshToken;
         await sessionExist.save();
 
+
+        const accessToken = jwt.sign({ userId: payload.userId, sessionId: sessionExist._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+       
         return res.status(200).json({
             message: "access token generated now !",
             accessToken,

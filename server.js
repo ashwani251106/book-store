@@ -8,7 +8,8 @@ const httpServer = http.createServer(app)
 const socket = new Server(httpServer,{
     cors:{
         origin:"http://localhost:5173",
-        methods:["GET","POST","PATCH","DELETE"]
+        methods:["GET","POST","PATCH","DELETE"],
+        credentials:true
     }
 })
 const mongoose = require("mongoose")
@@ -24,11 +25,17 @@ const messageModel = require("./models/messageModel")
 const viewBookRoute = require("./routes/viewBookRoute")
 const writeBookrouter = require("./routes/WriteBookRoute")
 const redis = require("./config/redisConfig")
+const changeEmailRouter = require("./routes/emailChangeRouter")
 
 mongoose.connect(process.env.MONGO_STRING,{
     maxPoolSize: 10, 
     minPoolSize: 2,
 }).then(()=>console.log("mongo Connected!")).catch((error)=>console.log(error))
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true
+}));
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api",authRouter)
@@ -39,6 +46,7 @@ app.use("/api",reviewRouter)
 app.use("/api",chatRouter)
 app.use("/api",viewBookRoute)
 app.use("/api",writeBookrouter)
+app.use("/api",changeEmailRouter)
 app.get("/",(req,res)=>{
     res.send("welcome sir how are you ? ")
 })

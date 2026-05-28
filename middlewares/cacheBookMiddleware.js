@@ -15,8 +15,9 @@ const cacheBookByUser = async (req, res, next) => {
         console.log("⚡ Cache hit: Serving user books list");
         const book_data_json = JSON.parse(book_data_string);
         return res.status(200).json({
-            message: `${book_data_json.length} books found!`,
-            allBooks: book_data_json
+           message:"books by user send from redis",
+           allBooks:book_data_json
+           
         });
     } catch (error) {
         console.error("Error in cacheBookByUser:", error.message);
